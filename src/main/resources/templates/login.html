@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <head>
+    <meta charset="US-ASCII">
+        <title>Login</title>
+    </head>
+    <body class="text-center">
+        <script
+            src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js">
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js">
+        </script>
+        <script 
+            src="https://unpkg.com/axios/dist/axios.min.js">
+        </script>
+
+        <div id="contents">
+                <user v-bind:user="user"></user>
+                <div>
+                    <button v-on:click="login">Sign in</button>
+                </div>
+            
+        </div>
+
+
+        <script type="text/babel">
+
+            Vue.component('user', {
+                props: ['user'],
+                template: ` <div>                                
+                                <input type="text" id="inputEmail" v-model="user.username" placeholder="User">
+                                <input type="password" id="inputPassword" v-model="user.password" placeholder="Password">                                
+                            </div>`
+            });
+
+            const serverApi = "http://localhost:8080/";
+            const serverApiKey = "jwtclientid:XY7kmzoNzl100";
+            var app = new Vue({
+                el: '#contents',
+                data: {
+                    user: { username: "", 
+                            password: "" }
+                },
+                methods: {
+                    login: function (event) {
+                        console.log(123);
+                        var instance = axios.create({
+                            baseURL: serverApi,
+                            headers: {'Authorization': 'Basic '+ window.btoa(serverApiKey),
+                                      'Content-Type': 'application/x-www-form-urlencoded'}
+                        });
+
+                        instance.post('oauth/token',getAuthorizationRequest(this.user))
+                        .then(response => (checkResponse(response)))
+                        .catch(error => (checkError(error)));
+                        
+                    }
+                }
+            });
+
+            function getAuthorizationRequest(user){
+                var tokenCred = new URLSearchParams({
+                    grant_type: "password",
+                    username: user.username,
+                    password: user.password
+                });
+                
+                return tokenCred.toString();
+            }
+
+            function checkResponse(response){
+                console.log(response.data);
+
+                var instance = axios.create({
+                            baseURL: serverApi
+                        });
+
+                        instance.post('',response.data.access_token)
+                        .then(responsePage => {
+                                            document.open();
+                                            document.write(responsePage.data);
+                                            document.close();
+                                            })
+                        .catch(error => (checkError(error)));
+            }
+            function checkError(error){
+                console.log(error);
+            }
+            </script>
+    </body>
+</html>

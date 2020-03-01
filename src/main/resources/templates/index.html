@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <meta charset="US-ASCII">
+        <title>My account</title> 
+    </head>
+    <body>
+        <script
+            src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js">
+        </script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js">
+        </script>
+        <script 
+            src="https://unpkg.com/axios/dist/axios.min.js">
+        </script>        
+        <div id="contents">
+            
+        </div>               
+        <script th:inline="javascript">
+            const documentToken=[[${token}]];
+        </script>
+
+        <script type="text/babel">
+            const instance = axios.create({
+                            baseURL: 'http://localhost:8080/',
+                            headers: {'Authorization': 'Bearer '+ documentToken}
+                        });
+
+            var app = new Vue({
+                el: '#contents',
+                data: {
+                },
+                methods: {
+                }
+            });
+            </script>
+    </body>
+</html>
