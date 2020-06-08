@@ -6,8 +6,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.test.discshop.DemoApplication;
+import com.test.discshop.CookieCollector;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ViewController {
+    @Autowired
+    CookieCollector cookieCollector;
+
     @GetMapping("/")
     public String index(Model model, 
                         HttpServletRequest request, 
@@ -29,7 +33,7 @@ public class ViewController {
             response.addCookie(cookie);
             return "login";
         } else {
-            String tokenStr = DemoApplication.getLastToken(sessionId);
+            String tokenStr = cookieCollector.getLastToken(sessionId);
             if (tokenStr==null) {
                 return "login";
             } else {
@@ -43,7 +47,7 @@ public class ViewController {
     public String postIndex(Model model, 
                             @RequestBody String tokenStr, 
                             @CookieValue(value = "session_id") String sessionId) {
-        DemoApplication.setNewCookie(sessionId, tokenStr);
+        cookieCollector.setNewCookie(sessionId, tokenStr);
         model.addAttribute("token", tokenStr);		
         return "index";
     }
